@@ -1,0 +1,4 @@
+---
+- name: restart s6
+  become: yes
+  service: name=s6 state=restarted

@@ -1,0 +1,2 @@
+---
+site_root_web: "/srv/http/{{site_domain}}"

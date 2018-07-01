@@ -1,0 +1,40 @@
+---
+- name: install nginx
+  become: yes
+  pkgng: name=nginx state=present
+
+- name: enable nginx in rc.conf
+  become: yes
+  lineinfile:
+    dest: /etc/rc.conf
+    line: nginx_enable=YES
+    state: present
+
+- name: ensure nginx directory
+  become: yes
+  file:
+    path: "{{item}}"
+    state: directory
+  with_items:
+    - /usr/local/etc/nginx
+    - /usr/local/etc/nginx/conf.d
+
+- name: configure nginx
+  become: yes
+  template:
+    src: "nginx/nginx.conf.j2"
+    dest: "/usr/local/etc/nginx/nginx.conf"
+  notify:
+    - reload nginx
+
+- name: configure nginx site
+  become: yes
+  template:
+    src: "nginx/site.conf.j2"
+    dest: "/usr/local/etc/nginx/conf.d/site.conf"
+  notify:
+    - reload nginx
+
+- name: enable nginx
+  become: yes
+  service: name=nginx enabled=yes state=started

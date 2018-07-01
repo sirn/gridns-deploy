@@ -1,0 +1,23 @@
+---
+- name: install dnscrypt-proxy
+  become: yes
+  pkgng: name=dnscrypt-proxy2 state=present
+
+- name: enable dnscrypt-proxy in rc.conf
+  become: yes
+  lineinfile:
+    dest: /etc/rc.conf
+    line: dnscrypt_proxy_enable=YES
+    state: present
+
+- name: configure dnscrypt-proxy
+  become: yes
+  copy:
+    src: dnscrypt-proxy.toml
+    dest: /usr/local/etc/dnscrypt-proxy.toml
+  notify:
+    - restart dnscrypt-proxy
+
+- name: enable dnscrypt-proxy
+  become: yes
+  service: name=dnscrypt-proxy enabled=yes state=started

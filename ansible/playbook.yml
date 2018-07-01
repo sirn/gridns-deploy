@@ -1,0 +1,32 @@
+---
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: bootstrap pkg
+      become: yes
+      raw: /usr/bin/env ASSUME_ALWAYS_YES=1 /usr/sbin/pkg bootstrap
+      ignore_errors: true
+      register: bootstrap_pkg
+      changed_when: bootstrap_pkg.stdout.find("already bootstrapped") == -1
+
+    - name: update pkg
+      become: yes
+      raw: /usr/sbin/pkg update -f
+      ignore_errors: true
+      register: update_pkg
+      changed_when: update_pkg.stdout.find("are up to date") == -1
+
+    - name: install python
+      become: yes
+      raw: /usr/sbin/pkg install -y python36
+      ignore_errors: true
+      register: install_python
+      changed_when: install_python.stdout.find("are already installed") == -1
+
+- hosts: all
+  roles:
+    - { role: common, tags: ['common'] }
+    - { role: dnscrypt-proxy, tags: ['dnscrypt-proxy'] }
+    - { role: unbound, tags: ['unbound'] }
+    - { role: doh-proxy, tags: ['doh-proxy'] }
+    - { role: nginx, tags: ['nginx'] }

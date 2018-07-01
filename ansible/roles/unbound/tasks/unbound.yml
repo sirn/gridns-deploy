@@ -1,0 +1,23 @@
+---
+- name: install unbound
+  become: yes
+  pkgng: name=unbound state=present
+
+- name: enable unbound in rc.conf
+  become: yes
+  lineinfile:
+    dest: /etc/rc.conf
+    line: unbound_enable=YES
+    state: present
+
+- name: configure unbound
+  become: yes
+  copy:
+    src: unbound/unbound.conf
+    dest: /usr/local/etc/unbound/unbound.conf
+  notify:
+    - restart unbound
+
+- name: enable unbound
+  become: yes
+  service: name=unbound enabled=yes state=started

@@ -1,0 +1,53 @@
+---
+- name: install dehydrated
+  become: yes
+  pkgng: name=dehydrated state=present
+
+- name: ensure dehydrated directory
+  become: yes
+  file:
+    path: "{{item}}"
+    owner: www
+    group: www
+    state: directory
+  with_items:
+    - /usr/local/etc/dehydrated
+    - /usr/local/www/dehydrated
+
+- name: configure dehydrated
+  become: yes
+  template:
+    src: "dehydrated/{{item}}.j2"
+    dest: "/usr/local/etc/dehydrated/{{item}}"
+  with_items:
+    - config
+    - domains.txt
+
+- name: enable dehydrated in periodic.conf
+  become: yes
+  lineinfile:
+    dest: /etc/periodic.conf
+    line: "{{item}}"
+    create: yes
+    state: present
+  with_items:
+    - weekly_dehydrated_enable="YES"
+    - weekly_dehydrated_user="www"
+
+- name: setup letsencrypt account
+  become: yes
+  become_user: www
+  command: /usr/local/bin/dehydrated --register --accept-terms
+  args:
+    creates: /usr/local/etc/dehydrated/accounts
+  notify:
+    - restart nginx
+
+- name: setup initial cert
+  become: yes
+  become_user: www
+  command: /usr/local/bin/dehydrated -c
+  args:
+    creates: "/usr/local/etc/dehydrated/certs/{{site_domain}}"
+  notify:
+    - restart nginx

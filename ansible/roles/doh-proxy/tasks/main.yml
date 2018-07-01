@@ -1,0 +1,21 @@
+---
+- name: install doh-proxy
+  become: yes
+  pip:
+    name: "doh-proxy"
+    state: latest
+
+- name: ensure doh-proxy service directory
+  become: yes
+  file:
+    path: /var/service/doh-proxy
+    state: directory
+
+- name: install doh-proxy service
+  become: yes
+  copy:
+    src: run
+    dest: /var/service/doh-proxy/run
+    mode: 0555
+  notify:
+    - restart s6

@@ -1,0 +1,40 @@
+user www;
+worker_processes {{ansible_processor_vcpus|default(ansible_processor_count)}};
+pid /var/run/nginx.pid;
+
+events {
+  worker_connections 256;
+}
+
+http {
+  include mime.types;
+  default_type application/octet-stream;
+
+  server_names_hash_bucket_size 64;
+  types_hash_max_size 2048;
+  keepalive_timeout 120;
+
+  tcp_nodelay on;
+  tcp_nopush on;
+  sendfile on;
+
+  gzip on;
+  gzip_types application/json text/css text/javascript;
+  gzip_proxied any;
+  gzip_buffers 16 8k;
+  gzip_comp_level 9;
+  gzip_min_length 16;
+
+  client_max_body_size 128m;
+
+  server {
+    listen 80;
+
+    location / {
+      deny all;
+      return 403;
+    }
+  }
+
+  include conf.d/*.conf;
+}

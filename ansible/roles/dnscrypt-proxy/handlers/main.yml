@@ -1,0 +1,4 @@
+---
+- name: restart dnscrypt-proxy
+  become: yes
+  service: name=dnscrypt-proxy enabled=yes state=restarted
