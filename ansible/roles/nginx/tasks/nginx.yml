@@ -38,3 +38,20 @@
 - name: enable nginx
   become: yes
   service: name=nginx enabled=yes state=started
+
+- name: install nginx periodic
+  become: yes
+  copy:
+    src: "nginx/periodic.sh"
+    dest: "/usr/local/etc/periodic/weekly/900.nginx"
+    mode: 0555
+
+- name: enable nginx in periodic.conf
+  become: yes
+  lineinfile:
+    dest: /etc/periodic.conf
+    line: "{{item}}"
+    create: yes
+    state: present
+  with_items:
+    - weekly_nginx_reload_enable="YES"
