@@ -67,5 +67,5 @@ parse_domainonly() {
 #
 
 parse_blocklist "$blocklist" | awk '{
-    print "local-zone: \""$1"\" redirect\nlocal-data: \""$1" A 0.0.0.0\""
+    print "local-zone: \""$1"\" static"
 }' > "$output"
