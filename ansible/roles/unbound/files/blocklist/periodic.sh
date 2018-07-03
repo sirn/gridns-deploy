@@ -21,7 +21,7 @@ case "$daily_blocklist_enable" in
 		su -m "$daily_blocklist_user" -c "/bin/sh /usr/local/etc/unbound/blocklist/generate.sh --blocklist $daily_blocklist_file --output $daily_blocklist_out"
 	fi
 
-        service unbound reload
+        service unbound restart
         ;;
     *)
         ;;
