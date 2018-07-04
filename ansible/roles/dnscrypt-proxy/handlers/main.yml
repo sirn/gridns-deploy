@@ -1,4 +1,4 @@
 ---
 - name: restart dnscrypt-proxy
   become: yes
-  service: name=dnscrypt-proxy enabled=yes state=restarted
+  command: s6-svc -wr -t /var/service/dnscrypt-proxy

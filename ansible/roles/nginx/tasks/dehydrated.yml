@@ -23,17 +23,6 @@
     - config
     - domains.txt
 
-- name: enable dehydrated in periodic.conf
-  become: yes
-  lineinfile:
-    dest: /etc/periodic.conf
-    line: "{{item}}"
-    create: yes
-    state: present
-  with_items:
-    - weekly_dehydrated_enable="YES"
-    - weekly_dehydrated_user="www"
-
 - name: setup letsencrypt account
   become: yes
   become_user: www
@@ -51,3 +40,10 @@
     creates: "/usr/local/etc/dehydrated/certs/{{site_domain}}"
   notify:
     - restart nginx
+
+- name: setup dehydrated periodic
+  become: yes
+  copy:
+    src: "dehydrated/periodic"
+    dest: "/usr/local/etc/periodic/weekly/900.dehydrated"
+    mode: 0555

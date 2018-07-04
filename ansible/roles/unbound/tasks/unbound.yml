@@ -3,13 +3,6 @@
   become: yes
   pkgng: name=unbound state=present
 
-- name: enable unbound in rc.conf
-  become: yes
-  lineinfile:
-    dest: /etc/rc.conf
-    line: unbound_enable=YES
-    state: present
-
 - name: configure unbound
   become: yes
   copy:
@@ -18,6 +11,17 @@
   notify:
     - restart unbound
 
-- name: enable unbound
+- name: ensure unbound service directory
   become: yes
-  service: name=unbound enabled=yes state=started
+  file:
+    path: /var/service/unbound
+    state: directory
+
+- name: install unbound service
+  become: yes
+  copy:
+    src: unbound/run
+    dest: /var/service/unbound/run
+    mode: 0555
+  notify:
+    - rescan s6

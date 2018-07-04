@@ -1,0 +1,4 @@
+#!/usr/local/bin/execlineb -P
+
+fdmove -c 2 1
+/usr/local/sbin/unbound -d -c /usr/local/etc/unbound/unbound.conf

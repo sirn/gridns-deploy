@@ -1,4 +1,4 @@
 ---
 - name: restart unbound
   become: yes
-  service: name=unbound enabled=yes state=restarted
+  command: s6-svc -wr -t /var/service/unbound

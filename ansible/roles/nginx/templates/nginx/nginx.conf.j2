@@ -1,4 +1,5 @@
 user www;
+daemon off;
 worker_processes {{ansible_processor_vcpus|default(ansible_processor_count)}};
 pid /var/run/nginx.pid;
 

@@ -1,0 +1,10 @@
+#!/usr/local/bin/execlineb -P
+
+foreground {
+  s6-setuidgid nobody
+  foreground {
+    sh /usr/local/etc/unbound/blocklist/generate.sh --blocklist /usr/local/etc/unbound/blocklist/blocklist.txt --output /usr/local/etc/unbound/blocklist/blocklist.conf
+  }
+}
+
+s6-svc -wr -t /var/service/unbound

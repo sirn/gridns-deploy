@@ -3,13 +3,6 @@
   become: yes
   pkgng: name=nginx state=present
 
-- name: enable nginx in rc.conf
-  become: yes
-  lineinfile:
-    dest: /etc/rc.conf
-    line: nginx_enable=YES
-    state: present
-
 - name: ensure nginx directory
   become: yes
   file:
@@ -35,23 +28,17 @@
   notify:
     - reload nginx
 
-- name: enable nginx
+- name: ensure nginx service directory
   become: yes
-  service: name=nginx enabled=yes state=started
+  file:
+    path: /var/service/nginx
+    state: directory
 
-- name: install nginx periodic
+- name: install nginx service
   become: yes
   copy:
-    src: "nginx/periodic.sh"
-    dest: "/usr/local/etc/periodic/weekly/900.nginx"
+    src: nginx/run
+    dest: /var/service/nginx/run
     mode: 0555
-
-- name: enable nginx in periodic.conf
-  become: yes
-  lineinfile:
-    dest: /etc/periodic.conf
-    line: "{{item}}"
-    create: yes
-    state: present
-  with_items:
-    - weekly_nginx_reload_enable="YES"
+  notify:
+    - rescan s6

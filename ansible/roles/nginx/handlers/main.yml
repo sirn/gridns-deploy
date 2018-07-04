@@ -1,8 +1,8 @@
 ---
 - name: restart nginx
   become: yes
-  service: name=nginx enabled=yes state=restarted
+  command: s6-svc -wr -t /var/service/nginx
 
 - name: reload nginx
   become: yes
-  service: name=nginx enabled=yes state=reloaded
+  command: s6-svc -h /var/service/nginx

@@ -18,4 +18,4 @@
     dest: /var/service/doh-proxy/run
     mode: 0555
   notify:
-    - restart s6
+    - rescan s6

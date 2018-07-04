@@ -1,0 +1,13 @@
+---
+- name: disable dnscrypt-proxy in rc.conf
+  become: yes
+  lineinfile:
+    dest: /etc/rc.conf
+    line: dnscrypt_proxy_enable=YES
+    state: absent
+  register: dnscrypt_deinstall
+
+- name: disable dnscrypt-proxy
+  become: yes
+  service: name=dnscrypt-proxy enabled=yes state=stopped
+  when: dnscrypt_deinstall.changed

@@ -1,0 +1,5 @@
+#!/usr/local/bin/execlineb -P
+
+s6-setuidgid _dnscrypt-proxy
+fdmove -c 2 1
+/usr/local/sbin/dnscrypt-proxy -config /usr/local/etc/dnscrypt-proxy.toml

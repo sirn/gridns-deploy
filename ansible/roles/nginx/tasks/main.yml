@@ -1,4 +1,5 @@
 ---
+- import_tasks: "deinstall.yml"
 - import_tasks: "nginx.yml"
 - import_tasks: "dehydrated.yml"
   when: site_ssl

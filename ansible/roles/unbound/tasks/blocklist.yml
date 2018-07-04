@@ -21,26 +21,6 @@
     - generate.sh
   register: blocklist_installed
 
-- name: install blocklist periodic
-  become: yes
-  copy:
-    src: "blocklist/periodic.sh"
-    dest: "/usr/local/etc/periodic/daily/000.blocklist"
-    mode: 0555
-
-- name: enable blocklist in periodic.conf
-  become: yes
-  lineinfile:
-    dest: /etc/periodic.conf
-    line: "{{item}}"
-    create: yes
-    state: present
-  with_items:
-    - daily_blocklist_enable="YES"
-    - daily_blocklist_user="www"
-    - daily_blocklist_file="/usr/local/etc/unbound/blocklist/blocklist.txt"
-    - daily_blocklist_out="/usr/local/etc/unbound/blocklist/blocklist.conf"
-
 - name: generate initial blocklist
   become: yes
   command: |
@@ -57,3 +37,10 @@
     path: /usr/local/etc/unbound/blocklist/blocklist.conf
     owner: nobody
     group: nobody
+
+- name: setup blocklist periodic
+  become: yes
+  copy:
+    src: "blocklist/periodic"
+    dest: "/usr/local/etc/periodic/daily/900.blocklist"
+    mode: 0555

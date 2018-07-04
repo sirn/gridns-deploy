@@ -1,14 +1,9 @@
 ---
+- import_tasks: deinstall.yml
+
 - name: install dnscrypt-proxy
   become: yes
   pkgng: name=dnscrypt-proxy2 state=present
-
-- name: enable dnscrypt-proxy in rc.conf
-  become: yes
-  lineinfile:
-    dest: /etc/rc.conf
-    line: dnscrypt_proxy_enable=YES
-    state: present
 
 - name: configure dnscrypt-proxy
   become: yes
@@ -18,6 +13,17 @@
   notify:
     - restart dnscrypt-proxy
 
-- name: enable dnscrypt-proxy
+- name: ensure dnscrypt-proxy service directory
   become: yes
-  service: name=dnscrypt-proxy enabled=yes state=started
+  file:
+    path: /var/service/dnscrypt-proxy
+    state: directory
+
+- name: install dnscrypt-proxy service
+  become: yes
+  copy:
+    src: run
+    dest: /var/service/dnscrypt-proxy/run
+    mode: 0555
+  notify:
+    - rescan s6
