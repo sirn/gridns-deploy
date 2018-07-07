@@ -1,4 +1,4 @@
 ---
 - name: restart unbound
   become: yes
-  command: s6-svc -wr -t /var/service/unbound
+  command: s6-svc -t /var/service/unbound

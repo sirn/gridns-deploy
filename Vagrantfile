@@ -11,5 +11,6 @@ Vagrant.configure("2") do |config|
     ansible.playbook = "ansible/playbook.yml"
     ansible.config_file = "ansible/ansible.cfg"
     ansible.compatibility_mode = "2.0"
+    ansible.tags = ENV['ANSIBLE_TAGS']&.split
   end
 end

@@ -1,5 +1,8 @@
 #!/usr/local/bin/execlineb -P
 
+emptyenv
+env PATH=/usr/local/bin:/usr/bin:/bin
+
 foreground {
   s6-setuidgid nobody
   foreground {
@@ -7,4 +10,4 @@ foreground {
   }
 }
 
-s6-svc -wr -t /var/service/unbound
+s6-svc -t /var/service/unbound
