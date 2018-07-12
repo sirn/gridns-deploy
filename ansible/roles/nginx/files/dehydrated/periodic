@@ -1,7 +1,7 @@
 #!/usr/local/bin/execlineb -P
 
 emptyenv
-env PATH=/usr/local/bin:/usr/bin:/bin
+env PATH=/usr/local/bin:/etc:/bin:/sbin:/usr/bin:/usr/sbin
 
 foreground {
   s6-setuidgid www

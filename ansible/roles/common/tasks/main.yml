@@ -59,3 +59,14 @@
   become: yes
   service: name=s6 enabled=yes state=started
   when: s6_enabled.changed
+
+- name: setup periodic logging
+  become: yes
+  lineinfile:
+    dest: /etc/periodic.conf
+    line: "{{item}}"
+    state: present
+  with_items:
+    - daily_output="/var/log/daily.log"
+    - weekly_output="/var/log/weekly.log"
+    - monthly_output="/var/log/monthly.log"
