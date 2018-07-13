@@ -1,6 +1,6 @@
 #!/usr/local/bin/execlineb -P
 
-emptyenv
+/usr/local/bin/emptyenv
 env PATH=/usr/local/bin:/etc:/bin:/sbin:/usr/bin:/usr/sbin
 
 foreground {
