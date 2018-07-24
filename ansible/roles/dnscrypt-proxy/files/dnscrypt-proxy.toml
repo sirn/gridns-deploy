@@ -19,7 +19,7 @@ fallback_resolver = '8.8.8.8:53'
 ignore_system_dns = true
 block_ipv6 = false
 
-cache = false
+cache = true
 cache_size = 512
 cache_min_ttl = 600
 cache_max_ttl = 86400
