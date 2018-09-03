@@ -11,7 +11,7 @@ require_dnssec = false
 require_nolog = true
 require_nofilter = true
 
-force_tcp = false
+force_tcp = true
 timeout = 2500
 cert_refresh_delay = 240
 
@@ -19,10 +19,7 @@ fallback_resolver = '8.8.8.8:53'
 ignore_system_dns = true
 block_ipv6 = false
 
-cache = true
-cache_size = 512
-cache_min_ttl = 600
-cache_max_ttl = 86400
+cache = false
 
 [sources.public-resolvers]
 urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v2/public-resolvers.md', 'https://download.dnscrypt.info/resolvers-list/v2/public-resolvers.md']
