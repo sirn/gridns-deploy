@@ -1,21 +1,21 @@
-server_names = ['cloudflare']
+server_names = ['cloudflare', 'cloudflare-ipv6']
 listen_addresses = ['127.0.0.1:5353']
 max_clients = 250
 
 ipv4_servers = true
-ipv6_servers = false
+ipv6_servers = true
 dnscrypt_servers = true
 doh_servers = true
 
-require_dnssec = false
+require_dnssec = true
 require_nolog = true
 require_nofilter = true
 
-force_tcp = true
+force_tcp = false
 timeout = 2500
 cert_refresh_delay = 240
 
-fallback_resolver = '8.8.8.8:53'
+fallback_resolver = '1.1.1.1:53'
 ignore_system_dns = true
 block_ipv6 = false
 

@@ -1,5 +1,6 @@
 resource "digitalocean_droplet" "sg" {
   image              = "freebsd-11-1-x64-zfs"
+  ipv6               = true
   name               = "gridns-sg"
   private_networking = true
   region             = "sgp1"
