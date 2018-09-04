@@ -1,0 +1,2 @@
+#!/usr/local/bin/execlineb -P
+s6-log -b n20 s10000000 /var/log/dnscrypt-proxy/

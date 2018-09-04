@@ -16,14 +16,26 @@
 - name: ensure dnscrypt-proxy service directory
   become: yes
   file:
-    path: /var/service/dnscrypt-proxy
+    path: "{{item}}"
     state: directory
+  with_items:
+    - /var/service/dnscrypt-proxy
+    - /var/service/dnscrypt-proxy/log
 
 - name: install dnscrypt-proxy service
   become: yes
   copy:
     src: run
     dest: /var/service/dnscrypt-proxy/run
+    mode: 0555
+  notify:
+    - rescan s6
+
+- name: install dnscrypt-proxy logging service
+  become: yes
+  copy:
+    src: log
+    dest: /var/service/dnscrypt-proxy/log/run
     mode: 0555
   notify:
     - rescan s6

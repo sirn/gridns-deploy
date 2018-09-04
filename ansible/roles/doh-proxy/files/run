@@ -2,4 +2,4 @@
 
 s6-setuidgid www
 fdmove -c 2 1
-doh-httpproxy --upstream-resolver=127.0.0.1 --port 8080 --listen-address 127.0.0.1 --level WARN
+doh-httpproxy --upstream-resolver=127.0.0.1 --port=8080 --listen-address=127.0.0.1 --level=WARNING

@@ -8,14 +8,26 @@
 - name: ensure doh-proxy service directory
   become: yes
   file:
-    path: /var/service/doh-proxy
+    path: "{{item}}"
     state: directory
+  with_items:
+    - /var/service/doh-proxy
+    - /var/service/doh-proxy/log
 
 - name: install doh-proxy service
   become: yes
   copy:
     src: run
     dest: /var/service/doh-proxy/run
+    mode: 0555
+  notify:
+    - rescan s6
+
+- name: install doh-proxy log service
+  become: yes
+  copy:
+    src: log
+    dest: /var/service/doh-proxy/log/run
     mode: 0555
   notify:
     - rescan s6

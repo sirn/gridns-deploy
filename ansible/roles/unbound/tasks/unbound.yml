@@ -41,14 +41,26 @@
 - name: ensure unbound service directory
   become: yes
   file:
-    path: /var/service/unbound
+    path: "{{item}}"
     state: directory
+  with_items:
+    - /var/service/unbound
+    - /var/service/unbound/log
 
 - name: install unbound service
   become: yes
   copy:
     src: unbound/run
     dest: /var/service/unbound/run
+    mode: 0555
+  notify:
+    - rescan s6
+
+- name: install unbound log service
+  become: yes
+  copy:
+    src: unbound/log
+    dest: /var/service/unbound/log/run
     mode: 0555
   notify:
     - rescan s6
