@@ -8,6 +8,7 @@
 hostfile    0.0.0.0    https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
 hostfile    127.0.0.1  http://sysctl.org/cameleon/hosts
 hostfile    127.0.0.1  https://hosts-file.net/ad_servers.txt
+hostfile    127.0.0.1  https://sites.google.com/site/hosts2ch/ja
 domainonly             https://mirror1.malwaredomains.com/files/justdomains
 domainonly             https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
 domainonly             https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt

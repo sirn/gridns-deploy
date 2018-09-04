@@ -27,7 +27,7 @@ if [ ! "$output" ]; then
 fi
 
 if [ -x "$(command -v curl)" ]; then
-    fetch_cmd="curl -s"
+    fetch_cmd="curl -sL"
 elif [ -x "$(command -v fetch)" ]; then
     fetch_cmd="fetch -qo -"
 else
