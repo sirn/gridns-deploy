@@ -1,6 +1,0 @@
----
-ansible_python_interpreter: /usr/local/bin/python3.6
-
-site_ssl: no
-site_ssl_staging: yes
-site_domain: example.com

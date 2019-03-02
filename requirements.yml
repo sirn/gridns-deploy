@@ -1,0 +1,4 @@
+---
+- src: git+https://git.sr.ht/~sirn/ansible-freebsd
+  version: master
+  name: freebsd-roles

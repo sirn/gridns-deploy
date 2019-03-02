@@ -1,0 +1,95 @@
+---
+## Install
+##
+
+- name: install unbound
+  become: yes
+  pkgng:
+    name: unbound
+    state: present
+  notify:
+    - restart unbound
+
+
+## Configure
+##
+
+- name: configure unbound
+  become: yes
+  template:
+    src: unbound.conf.j2
+    dest: /usr/local/etc/unbound/unbound.conf
+  notify:
+    - restart unbound
+
+- name: configure unbound named.cache
+  become: yes
+  get_url:
+    url: https://www.internic.net/domain/named.cache
+    dest: /usr/local/etc/unbound/named.cache
+    owner: unbound
+    group: wheel
+
+- name: configure unbound dlv.isc.org.key
+  become: yes
+  get_url:
+    url: https://ftp.isc.org/www/dlv/dlv.isc.org.key
+    dest: /usr/local/etc/unbound/dlv.isc.org.key
+    owner: unbound
+    group: wheel
+
+- name: configure unbound root.key
+  become: yes
+  become_user: unbound
+  command: /usr/local/sbin/unbound-anchor -a /usr/local/etc/unbound/root.key
+  args:
+    creates: /usr/local/etc/unbound/root.key
+  register: unbound_root_key
+  failed_when: unbound_root_key.rc > 1
+
+
+## Supervise
+##
+
+- name: ensure unbound
+  become: yes
+  file:
+    dest: "{{item}}"
+    state: directory
+  with_items:
+    - /var/service/unbound
+    - /var/service/unbound/log
+
+- name: install unbound service
+  become: yes
+  copy:
+    dest: /var/service/unbound/run
+    mode: 0555
+    content: |
+      #!/usr/local/bin/execlineb -P
+      fdmove -c 2 1
+      {% if unbound_drop_privileges_early %}
+      s6-setuidgid unbound
+      {% endif %}
+      /usr/local/sbin/unbound -d -c /usr/local/etc/unbound/unbound.conf
+  notify:
+    - rescan s6
+    - restart unbound
+
+- name: install unbound log service
+  become: yes
+  copy:
+    dest: /var/service/unbound/log/run
+    mode: 0555
+    content: "{{unbound_logger}}"
+  notify:
+    - rescan s6
+    - restart unbound logger
+
+
+## Per-role flush
+##
+
+- name: flush handler
+  become: yes
+  meta: flush_handlers

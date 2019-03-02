@@ -1,4 +1,0 @@
----
-- name: restart dnscrypt-proxy
-  become: yes
-  command: s6-svc -t /var/service/dnscrypt-proxy

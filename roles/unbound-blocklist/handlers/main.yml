@@ -1,0 +1,12 @@
+---
+- name: rescan s6
+  become: yes
+  command: s6-svscanctl -an /var/service
+
+- name: restart unbound-blocklist
+  become: yes
+  command: s6-svc -t /var/service/unbound-blocklist
+
+- name: restart unbound-blocklist logger
+  become: yes
+  command: s6-svc -t /var/service/unbound-blocklist/log

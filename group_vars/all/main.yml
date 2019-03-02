@@ -1,0 +1,154 @@
+---
+## Local configurations
+##
+
+ansible_python_interpreter: /usr/local/bin/python3.6
+
+
+## System tuning
+##
+
+loaded_modules:
+  - zfs
+
+machdep_disable_tsc_calibration: 1
+
+kern_timecounter_invariant_tsc: 1
+
+
+## Roles configurations
+##
+
+# Dehydrated
+#
+
+dehydrated_domains:
+  - "{{hostname}}"
+
+dehydrated_postcmds:
+  - s6-svc -h /var/service/nginx
+
+dehydrated_staging: no
+
+# DNSCrypt-Proxy
+#
+
+dnscrypt_proxy_addresses:
+  - "[::1]:5353"
+
+dnscrypt_proxy_cache: no
+
+dnscrypt_proxy_drop_privileges_early: yes
+
+dnscrypt_proxy_fallback_resolver: "[2606:4700:4700::1111]:53"
+
+dnscrypt_proxy_use_servers:
+  - ipv6
+  - dnscrypt
+  - doh
+
+dnscrypt_proxy_upstreams:
+  - cloudflare-ipv6
+
+# DOH-server
+#
+
+doh_server_addresses:
+  - "[::1]:8053"
+
+doh_server_upstream:
+  - "[::1]:1053"
+
+
+# Nginx
+#
+
+nginx_access_log: /dev/null
+
+nginx_drop_privileges_early: yes
+
+nginx_error_log_level: warn
+
+nginx_http_port: 1080
+
+nginx_https_port: 1443
+
+nginx_ipv6: yes
+
+nginx_sites:
+  - secure: no
+    default: yes
+    locations:
+      - path: /
+        redirect_match: "^/(.*)$"
+        redirect_target: "https://{{hostname}}/$1"
+  - secure: yes
+    dehydrated_cert: "{{hostname}}"
+    domains:
+      - "{{hostname}}"
+    locations:
+      - path: /dns-query
+        proxy_name: doh
+        proxy_backends:
+          - "[::1]:8053"
+      - path: /
+        redirect_match: "^/(.*)$"
+        redirect_target: "https://gridns.xyz/$1"
+
+# Ntpd
+#
+
+ntpd_pools:
+  - asia.pool.ntp.org
+
+ntpd_servers:
+
+# PF
+#
+
+pf_allow_ipv6: yes
+
+pf_ext_iface: vtnet0
+
+pf_ipv4_forwarded_ports:
+  - { port: "80", proto: tcp, address: "{{ipv4_address}}", dest_port: "1080" }
+  - { port: "443", proto: tcp, address: "{{ipv4_address}}", dest_port: "1443" }
+
+pf_ipv6_forwarded_ports:
+  - { port: "80", proto: tcp, address: "{{ipv6_address}}", dest_port: "1080" }
+  - { port: "443", proto: tcp, address: "{{ipv6_address}}", dest_port: "1443" }
+
+# Unbound
+#
+
+unbound_access_control:
+  - "::1/128 allow"
+
+unbound_addresses:
+  - "::1"
+
+unbound_forward_zones:
+  - name: .
+    addresses:
+      - "::1@5353"
+
+unbound_drop_privileges_early: yes
+
+unbound_do_not_query_localhost: no
+
+unbound_includes:
+  - /usr/local/etc/unbound-blocklist/blocklist.conf
+
+unbound_infra_cache_min_rtt: 1500
+
+unbound_key_cache_size: 16m
+
+unbound_msg_cache_size: 16m
+
+unbound_neg_cache_size: 16m
+
+unbound_port: 1053
+
+unbound_rrset_cache_size: 16m
+
+unbound_verbosity: 0

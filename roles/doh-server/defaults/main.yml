@@ -1,0 +1,18 @@
+doh_server_addresses:
+  - 127.0.0.1:8053
+
+doh_server_logger: |
+  #!/usr/local/bin/execlineb -P
+  s6-log -b n10 s1000000 t !"gzip -nq9" /var/log/doh-server/
+
+doh_server_retries: 3
+
+doh_server_tcp_only: false
+
+doh_server_timeout: 10
+
+doh_server_upstream:
+  - 1.1.1.1:53
+  - 1.0.0.1:53
+
+doh_server_verbose: false

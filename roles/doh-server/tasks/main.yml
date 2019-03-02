@@ -1,0 +1,98 @@
+---
+## Install
+##
+
+- name: install
+  become: yes
+  pkgng:
+    name:
+      - git-lite
+      - gmake
+      - go
+    state: latest
+
+
+## Configure
+##
+
+- name: ensure doh-server directory
+  become: yes
+  file:
+    path: /usr/local/etc/doh-server
+    state: directory
+    owner: nobody
+    group: wheel
+    mode: 0755
+
+
+- name: configure doh-server
+  become: yes
+  template:
+    src: doh-server.conf.j2
+    dest: /usr/local/etc/doh-server/doh-server.conf
+  notify:
+    - restart doh-server
+
+
+## Setup
+##
+
+- name: install doh-server
+  become: yes
+  shell: |
+    BUILD_BASE="$(mktemp -d)"
+    SRCDIR="$BUILD_BASE/src"
+    GOPATH="$BUILD_BASE/gopath"
+    trap 'rm -rf $BUILD_BASE' 0 1 2 3 6 14 15
+
+    git clone https://github.com/m13253/dns-over-https.git "$SRCDIR"
+    cd "$SRCDIR" || exit 1
+    gmake || exit 1
+    install -m0755 doh-server/doh-server /usr/local/bin/doh-server
+  args:
+    creates: /usr/local/bin/doh-server
+
+
+## Supervise
+##
+
+- name: ensure doh-server service directories
+  become: yes
+  file:
+    dest: "{{item}}"
+    state: directory
+  with_items:
+    - /var/service/doh-server
+    - /var/service/doh-server/log
+
+- name: install doh-server service
+  become: yes
+  copy:
+    dest: /var/service/doh-server/run
+    mode: 0555
+    content: |
+      #!/usr/local/bin/execlineb -P
+      fdmove -c 2 1
+      s6-setuidgid nobody
+      /usr/local/bin/doh-server -conf /usr/local/etc/doh-server/doh-server.conf
+  notify:
+    - rescan s6
+    - restart doh-server
+
+- name: install doh-server log service
+  become: yes
+  copy:
+    dest: /var/service/doh-server/log/run
+    mode: 0555
+    content: "{{doh_server_logger}}"
+  notify:
+    - rescan s6
+    - restart doh-server logger
+
+
+## Per-role flush
+##
+
+- name: flush handler
+  become: yes
+  meta: flush_handlers

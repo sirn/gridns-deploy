@@ -1,0 +1,7 @@
+---
+hostname: dev.gridns.xyz
+
+# Dehydrated
+#
+
+dehydrated_staging: yes

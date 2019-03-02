@@ -1,0 +1,64 @@
+server:
+    verbosity: {{unbound_verbosity}}
+
+{% for address in unbound_addresses %}
+    interface: {{address}}
+{% endfor %}
+    port: {{unbound_port}}
+{% if unbound_drop_privileges_early %}
+    username: ""
+    chroot: ""
+{% else %}
+    username: unbound
+    chroot: /usr/local/etc/unbound
+{% endif %}
+    use-syslog: no
+    logfile: ""
+
+    ip-transparent: {{"yes" if unbound_ip_transparent else "no"}}
+    interface-automatic: {{"yes" if unbound_interface_automatic else "no"}}
+
+{% for access in unbound_access_control %}
+    access-control: {{access}}
+{% endfor %}
+
+    num-threads: {{unbound_num_threads}}
+    msg-cache-slabs: {{unbound_msg_cache_slabs}}
+    rrset-cache-slabs: {{unbound_rrset_cache_slabs}}
+    infra-cache-slabs: {{unbound_infra_cache_slabs}}
+    key-cache-slabs: {{unbound_key_cache_slabs}}
+
+    msg-cache-size: {{unbound_msg_cache_size}}
+    rrset-cache-size: {{unbound_rrset_cache_size}}
+    key-cache-size: {{unbound_key_cache_size}}
+    neg-cache-size: {{unbound_neg_cache_size}}
+
+    infra-cache-min-rtt: {{unbound_infra_cache_min_rtt}}
+    qname-minimisation: {{"yes" if unbound_qname_minimisation else "no"}}
+    use-caps-for-id: {{"yes" if unbound_use_caps_for_id else "no"}}
+    hide-identity: {{"yes" if unbound_hide_identity else "no"}}
+    hide-version: {{"yes" if unbound_hide_version else "no"}}
+
+    auto-trust-anchor-file: /usr/local/etc/unbound/root.key
+    dlv-anchor-file: /usr/local/etc/unbound/dlv.isc.org.key
+    root-hints: /usr/local/etc/unbound/named.cache
+
+    harden-glue: {{"yes" if unbound_harden_glue else "no"}}
+    harden-dnssec-stripped: {{"yes" if unbound_harden_dnssec_stripped else "no"}}
+    harden-below-nxdomain: {{"yes" if unbound_harden_below_nxdomain else "no"}}
+
+    do-not-query-localhost: {{"yes" if unbound_do_not_query_localhost else "no"}}
+{% if unbound_includes %}
+
+{% for inc in unbound_includes %}
+    include: {{inc}}
+{% endfor %}
+{% endif %}
+{% for zone in unbound_forward_zones %}
+
+forward-zone:
+    name: {{zone.name}}
+    {% for addr in zone.addresses %}
+    forward-addr: {{addr}}
+    {% endfor %}
+{% endfor %}

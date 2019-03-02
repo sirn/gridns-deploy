@@ -1,0 +1,112 @@
+---
+## Bootstrap
+##
+
+- hosts: all
+  gather_facts: false
+  tags:
+    - common
+
+  tasks:
+    - name: bootstrap python installation
+      become: yes
+      raw: |
+        echo 'resolv_conf="/dev/null"' > /etc/resolvconf.conf
+        echo 'nameserver 1.1.1.1' > /etc/resolvconf.conf
+        echo 'nameserver 1.0.0.1' >> /etc/resolvconf.conf
+        mkdir -p /usr/local/etc/pkg/repos
+
+        (
+          echo 'FreeBSD: {'
+          echo '  url: "pkg+http://{{freebsd_pkg_host}}/${ABI}/quarterly",'
+          echo '  mirror_type: "srv",'
+          echo '  signature_type: "fingerprints",'
+          echo '  fingerprints: "/usr/share/keys/pkg",'
+          echo '  enabled: yes'
+          echo '}'
+        ) > /usr/local/etc/pkg/repos/FreeBSD.conf
+
+        if ! test -f /usr/local/bin/python3.6; then
+          env ASSUME_ALWAYS_YES=1 /usr/sbin/pkg bootstrap
+          pkg-static update -f
+          pkg-static install -y python36
+        else
+          pkg-static update
+          exit 128
+        fi
+      register: python_bootstrap
+      failed_when: python_bootstrap.rc != 0 and python_bootstrap.rc != 128
+      changed_when: python_bootstrap.rc != 128
+
+    - setup:
+
+    - name: install command line tools
+      become: yes
+      pkgng:
+        name:
+          - ca_root_nss
+          - curl
+          - git-lite
+        state: latest
+
+    - import_role:
+        name: freebsd-roles/freebsd-tuning
+      tags:
+        - tuning
+
+    - import_role:
+        name: freebsd-roles/freebsd-pf
+      tags:
+        - pf
+
+    - import_role:
+        name: freebsd-roles/freebsd-s6
+      tags:
+        - s6
+
+    - import_role:
+        name: freebsd-roles/freebsd-ntpd
+      tags:
+        - ntpd
+
+
+## DNS
+##
+
+- hosts: dns
+  tasks:
+    - import_role:
+        name: dnscrypt-proxy
+      tags:
+        - dnscrypt-proxy
+
+    - import_role:
+        name: unbound-blocklist
+      tags:
+        - unbound-blocklist
+
+    - import_role:
+        name: unbound
+      tags:
+        - unbound
+
+
+## HTTP
+##
+
+- hosts: http
+  tasks:
+    - import_role:
+        name: doh-server
+      tags:
+        - doh-server
+
+    - import_role:
+        name: freebsd-roles/freebsd-s6-dehydrated
+      tags:
+        - dehydrated
+
+    - import_role:
+        name: freebsd-roles/freebsd-s6-nginx
+      tags:
+        - nginx

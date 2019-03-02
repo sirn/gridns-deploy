@@ -1,0 +1,124 @@
+---
+## Install
+##
+
+- name: install
+  become: yes
+  pkgng:
+    name:
+      - snooze
+    state: latest
+  notify:
+    - restart unbound-blocklist
+
+
+## Configure
+##
+
+- name: ensure unbound-blocklist directory
+  become: yes
+  file:
+    path: /usr/local/etc/unbound-blocklist
+    state: directory
+    owner: nobody
+    group: wheel
+    mode: 0755
+
+
+- name: copy unbound-blocklist configuration
+  become: yes
+  copy:
+    src: blocklist.txt
+    dest: /usr/local/etc/unbound-blocklist/blocklist.txt
+    owner: nobody
+    group: wheel
+    mode: 0600
+
+
+## Setup
+##
+
+- name: ensure libexec directory
+  become: yes
+  file:
+    path: /usr/local/libexec
+
+- name: install unbound-blocklist
+  become: yes
+  copy:
+    src: blocklist.sh
+    dest: /usr/local/libexec/unbound-blocklist
+    owner: nobody
+    group: wheel
+    mode: 0755
+
+- name: setup initial unbound-blocklist
+  become: yes
+  become_user: nobody
+  command: |
+    /usr/local/libexec/unbound-blocklist \
+      --blocklist /usr/local/etc/unbound-blocklist/blocklist.txt \
+      --workdir /usr/local/etc/unbound-blocklist
+  args:
+    creates: /usr/local/etc/unbound-blocklist/blocklist.conf
+
+
+## Supervise
+##
+
+- name: ensure unbound-blocklist service directories
+  become: yes
+  file:
+    dest: "{{item}}"
+    state: directory
+  with_items:
+    - /var/service/unbound-blocklist
+    - /var/service/unbound-blocklist/log
+
+- name: install unbound-blocklist service
+  become: yes
+  copy:
+    dest: /var/service/unbound-blocklist/run
+    mode: 0555
+    content: |
+      #!/usr/local/bin/execlineb -P
+      fdmove -c 2 1
+      snooze -d/7 -v -t /usr/local/etc/unbound-blocklist/timefile
+
+      if {
+        s6-setuidgid nobody
+        /usr/local/libexec/unbound-blocklist
+          --blocklist /usr/local/etc/unbound-blocklist/blocklist.txt
+          --workdir /usr/local/etc/unbound-blocklist
+      }
+      {% if unbound_blocklist_postcmds %}
+
+      {% for postcmd in unbound_blocklist_postcmds %}
+      foreground {
+        {{postcmd|trim|indent(2)}}
+      }
+      {% endfor %}
+      {% endif %}
+
+      touch /usr/local/etc/unbound-blocklist/timefile
+  notify:
+    - rescan s6
+    - restart unbound-blocklist
+
+- name: install unbound-blocklist log service
+  become: yes
+  copy:
+    dest: /var/service/unbound-blocklist/log/run
+    mode: 0555
+    content: "{{unbound_blocklist_logger}}"
+  notify:
+    - rescan s6
+    - restart unbound-blocklist logger
+
+
+## Per-role flush
+##
+
+- name: flush handler
+  become: yes
+  meta: flush_handlers

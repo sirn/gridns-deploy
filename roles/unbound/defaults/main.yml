@@ -1,0 +1,61 @@
+unbound_access_control:
+  - 127.0.0.1/32 allow
+
+unbound_addresses:
+  - 127.0.0.1
+
+unbound_forward_zones:
+  - name: .
+    addresses:
+      - 1.1.1.1@53
+      - 1.0.0.1@53
+
+unbound_do_not_query_localhost: yes
+
+unbound_harden_below_nxdomain: yes
+
+unbound_harden_dnssec_stripped: yes
+
+unbound_harden_glue: yes
+
+unbound_hide_identity: yes
+
+unbound_hide_version: yes
+
+unbound_includes:
+
+unbound_infra_cache_min_rtt: 50
+
+unbound_infra_cache_slabs: 2
+
+unbound_interface_automatic: no
+
+unbound_ip_transparent: no
+
+unbound_key_cache_size: 4m
+
+unbound_key_cache_slabs: 2
+
+unbound_logger: |
+  #!/usr/local/bin/execlineb -P
+  s6-log -b n10 s1000000 t !"gzip -nq9" /var/log/unbound/
+
+unbound_msg_cache_size: 1m
+
+unbound_msg_cache_slabs: 2
+
+unbound_neg_cache_size: 1m
+
+unbound_num_threads: 2
+
+unbound_port: 53
+
+unbound_qname_minimisation: yes
+
+unbound_rrset_cache_size: 4m
+
+unbound_rrset_cache_slabs: 2
+
+unbound_use_caps_for_id: yes
+
+unbound_verbosity: 1

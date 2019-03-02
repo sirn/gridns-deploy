@@ -1,0 +1,20 @@
+listen = [
+{% for address in doh_server_addresses %}
+  "{{address}}",
+{% endfor %}
+]
+
+cert = ""
+key = ""
+path = "/dns-query"
+
+upstream = [
+{% for upstream in doh_server_upstream %}
+  "{{upstream}}",
+{% endfor %}
+]
+
+timeout = {{doh_server_timeout}}
+tries = {{doh_server_retries}}
+tcp_only = {{"true" if doh_server_tcp_only else "false"}}
+verbose = {{"true" if doh_server_verbose else "false"}}

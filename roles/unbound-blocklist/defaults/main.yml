@@ -1,0 +1,7 @@
+---
+unbound_blocklist_postcmds:
+  - s6-svc -t /var/service/unbound
+
+unbound_blocklist_logger: |
+  #!/usr/local/bin/execlineb -P
+  s6-log -b n10 s1000000 t !"gzip -nq9" /var/log/unbound-blocklist/

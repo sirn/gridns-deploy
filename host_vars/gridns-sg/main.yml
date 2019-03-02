@@ -1,0 +1,4 @@
+---
+hostname: sg.gridns.xyz
+
+freebsd_pkg_host: pkg0.twn.freebsd.org

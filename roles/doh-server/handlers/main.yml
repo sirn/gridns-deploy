@@ -1,0 +1,12 @@
+---
+- name: rescan s6
+  become: yes
+  command: s6-svscanctl -an /var/service
+
+- name: restart doh-server
+  become: yes
+  command: s6-svc -t /var/service/doh-server
+
+- name: restart doh-server logger
+  become: yes
+  command: s6-svc -t /var/service/doh-server/log

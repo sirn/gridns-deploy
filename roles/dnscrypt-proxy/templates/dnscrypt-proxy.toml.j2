@@ -1,0 +1,56 @@
+{% if dnscrypt_proxy_upstreams %}
+server_names = [{% for upstream in dnscrypt_proxy_upstreams %}"{{upstream}}"{% if not loop.last %}, {% endif %}{% endfor %}]
+{% endif %}
+listen_addresses = [{% for addr in dnscrypt_proxy_addresses %}"{{addr}}"{% if not loop.last %}, {% endif %}{% endfor %}]
+max_clients = {{dnscrypt_proxy_max_clients}}
+{% if not dnscrypt_proxy_drop_privileges_early %}
+username = "_dnscrypt-proxy"
+{% endif %}
+
+{% if dnscrypt_proxy_use_servers %}
+## Require servers
+##
+
+{% for server in dnscrypt_proxy_use_servers %}
+{{server}}_servers = true
+{% endfor %}
+
+{% endif %}
+{% if dnscrypt_proxy_require_servers %}
+## Require properties
+##
+
+{% for require in dnscrypt_proxy_require_servers %}
+require_{{require}} = true
+{% endfor %}
+
+{% endif %}
+force_tcp = false
+timeout = 2500
+cert_refresh_delay = 240
+fallback_resolver = "{{dnscrypt_proxy_fallback_resolver}}"
+ignore_system_dns = true
+block_ipv6 = false
+
+{% if dnscrypt_proxy_cache %}
+## Cache
+##
+
+cache = true
+cache_size = {{dnscrypt_proxy_cache_size}}
+cache_min_ttl = {{dnscrypt_proxy_cache_min_ttl}}
+cache_max_ttl = {{dnscrypt_proxy_cache_max_ttl}}
+cache_neg_min_ttl = {{dnscrypt_proxy_cache_neg_min_ttl}}
+cache_neg_max_ttl = {{dnscrypt_proxy_cache_neg_max_ttl}}
+
+{% endif %}
+[sources]
+{% for source in dnscrypt_proxy_sources %}
+
+  [sources.{{source.name}}]
+  urls = [{% for u in source.urls %}"{{u}}"{% if not loop.last %}, {% endif %}{% endfor %}]
+  cache_file = "{{source.name}}.md"
+  minisign_key = "{{source.minisign_key}}"
+  refresh_delay = {{source.refresh_delay}}
+  prefix = "{{source.prefix}}"
+{% endfor %}

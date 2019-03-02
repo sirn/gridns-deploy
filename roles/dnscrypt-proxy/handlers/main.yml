@@ -1,0 +1,12 @@
+---
+- name: rescan s6
+  become: yes
+  command: s6-svscanctl -an /var/service
+
+- name: restart dnscrypt-proxy
+  become: yes
+  command: s6-svc -t /var/service/dnscrypt-proxy
+
+- name: restart dnscrypt-proxy logger
+  become: yes
+  command: s6-svc -t /var/service/dnscrypt-proxy/log

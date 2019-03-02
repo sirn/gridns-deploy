@@ -1,4 +1,0 @@
----
-- import_tasks: deinstall.yml
-- import_tasks: blocklist.yml
-- import_tasks: unbound.yml

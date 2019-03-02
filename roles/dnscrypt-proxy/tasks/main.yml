@@ -1,0 +1,70 @@
+---
+## Install
+##
+
+- name: install dnscrypt-proxy
+  become: yes
+  pkgng:
+    name: dnscrypt-proxy2
+    state: present
+  notify:
+    - restart dnscrypt-proxy
+
+
+## Configure
+##
+
+- name: configure dnscrypt-proxy
+  become: yes
+  template:
+    src: dnscrypt-proxy.toml.j2
+    dest: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+  notify:
+    - restart dnscrypt-proxy
+
+
+## Supervise
+##
+
+- name: ensure dnscrypt-proxy service directories
+  become: yes
+  file:
+    dest: "{{item}}"
+    state: directory
+  with_items:
+    - /var/service/dnscrypt-proxy
+    - /var/service/dnscrypt-proxy/log
+
+- name: install dnscrypt-proxy service
+  become: yes
+  copy:
+    dest: /var/service/dnscrypt-proxy/run
+    mode: 0555
+    content: |
+      #!/usr/local/bin/execlineb -P
+      fdmove -c 2 1
+      {% if dnscrypt_proxy_drop_privileges_early %}
+      s6-setuidgid _dnscrypt-proxy
+      {% endif %}
+      /usr/local/sbin/dnscrypt-proxy -config /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+  notify:
+    - rescan s6
+    - restart dnscrypt-proxy
+
+- name: install dnscrypt-proxy log service
+  become: yes
+  copy:
+    dest: /var/service/dnscrypt-proxy/log/run
+    mode: 0555
+    content: "{{dnscrypt_proxy_logger}}"
+  notify:
+    - rescan s6
+    - restart dnscrypt-proxy logger
+
+
+## Per-role flush
+##
+
+- name: flush handler
+  become: yes
+  meta: flush_handlers
