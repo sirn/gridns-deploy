@@ -45,13 +45,18 @@ if ! "$_ansible_galaxy" install $_ansible_galaxy_args -r "$_requirements_file"; 
     exit 1
 fi
 
-pass Ansible/gridns.xyz |
-    exec \
-        env ANSIBLE_CONFIG="$_base_dir/ansible.cfg" \
+_temp="$(mktemp -d)"
+_fifo="$_temp/fifo"
+trap 'rm -f $_fifo && rmdir $_temp' 0 1 2 3 6 14 15
+
+mkfifo "$_fifo"
+pass Ansible/gridns.xyz > "$_fifo" &
+
+env ANSIBLE_CONFIG="$_base_dir/ansible.cfg" \
         "$_ansible_playbook" \
         "$_playbook_file" \
         -i "$_inventory_file" \
         --user=freebsd \
-        --vault-password-file=/dev/stdin \
+        --vault-password-file="$_fifo" \
         --ssh-common-args="-o StrictHostKeyChecking=no" \
         "$@"
