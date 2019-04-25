@@ -118,6 +118,8 @@ pf_ipv6_forwarded_ports:
   - { port: "80", proto: tcp, address: "{{ipv6_address}}", dest_port: "1080" }
   - { port: "443", proto: tcp, address: "{{ipv6_address}}", dest_port: "1443" }
 
+pf_ssh_port: 4022
+
 # Unbound
 #
 
