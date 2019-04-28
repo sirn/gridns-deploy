@@ -8,12 +8,9 @@ ansible_python_interpreter: /usr/local/bin/python3.6
 ## System tuning
 ##
 
-loaded_modules:
-  - zfs
+tuning_disable_tsc_calibration: yes
 
-machdep_disable_tsc_calibration: 1
-
-kern_timecounter_invariant_tsc: 1
+hardening_ssh_port: 4022
 
 
 ## Roles configurations

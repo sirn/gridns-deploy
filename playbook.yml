@@ -55,6 +55,11 @@
         - tuning
 
     - import_role:
+        name: freebsd-roles/freebsd-hardening
+      tags:
+        - hardening
+
+    - import_role:
         name: freebsd-roles/freebsd-pf
       tags:
         - pf
