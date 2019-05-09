@@ -33,30 +33,29 @@ dehydrated_staging: no
 #
 
 dnscrypt_proxy_addresses:
-  - "[::1]:5353"
+  - "127.0.0.1:5353"
 
 dnscrypt_proxy_cache: no
 
 dnscrypt_proxy_drop_privileges_early: yes
 
-dnscrypt_proxy_fallback_resolver: "[2606:4700:4700::1111]:53"
+dnscrypt_proxy_fallback_resolver: "1.1.1.1:53"
 
 dnscrypt_proxy_use_servers:
-  - ipv6
   - dnscrypt
   - doh
 
 dnscrypt_proxy_upstreams:
-  - cloudflare-ipv6
+  - cloudflare
 
 # DOH-server
 #
 
 doh_server_addresses:
-  - "[::1]:8053"
+  - "127.0.0.1:8053"
 
 doh_server_upstream:
-  - "[::1]:1053"
+  - "127.0.0.1:1053"
 
 
 # Nginx
@@ -93,7 +92,7 @@ nginx_sites:
       - path: /dns-query
         proxy_name: doh
         proxy_backends:
-          - "[::1]:8053"
+          - "127.0.0.1:8053"
       - path: /
         redirect_match: "^/(.*)$"
         redirect_target: "https://gridns.xyz/$1"
@@ -127,15 +126,15 @@ pf_ssh_port: 4022
 #
 
 unbound_access_control:
-  - "::1/128 allow"
+  - "127.0.0.1/32 allow"
 
 unbound_addresses:
-  - "::1"
+  - "127.0.0.1"
 
 unbound_forward_zones:
   - name: .
     addresses:
-      - "::1@5353"
+      - "127.0.0.1@5353"
 
 unbound_drop_privileges_early: yes
 
