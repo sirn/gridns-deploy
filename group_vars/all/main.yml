@@ -41,6 +41,8 @@ dnscrypt_proxy_drop_privileges_early: yes
 
 dnscrypt_proxy_fallback_resolver: "1.1.1.1:53"
 
+dnscrypt_proxy_max_clients: 300
+
 dnscrypt_proxy_use_servers:
   - dnscrypt
   - doh
