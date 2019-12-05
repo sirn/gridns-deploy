@@ -81,11 +81,6 @@
 - hosts: dns
   tasks:
     - import_role:
-        name: dnscrypt-proxy
-      tags:
-        - dnscrypt-proxy
-
-    - import_role:
         name: unbound-blocklist
       tags:
         - unbound-blocklist
