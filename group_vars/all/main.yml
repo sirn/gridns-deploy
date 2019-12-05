@@ -133,11 +133,6 @@ unbound_access_control:
 unbound_addresses:
   - "127.0.0.1"
 
-unbound_forward_zones:
-  - name: .
-    addresses:
-      - "127.0.0.1@5353"
-
 unbound_drop_privileges_early: yes
 
 unbound_do_not_query_localhost: no

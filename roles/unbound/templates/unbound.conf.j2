@@ -42,6 +42,9 @@ server:
     auto-trust-anchor-file: /usr/local/etc/unbound/root.key
     dlv-anchor-file: /usr/local/etc/unbound/dlv.isc.org.key
     root-hints: /usr/local/etc/unbound/named.cache
+{% if unbound_tls_cert_bundle %}
+    tls-cert-bundle: "{{unbound_tls_cert_bundle}}"
+{% endif %}
 
     harden-glue: {{"yes" if unbound_harden_glue else "no"}}
     harden-dnssec-stripped: {{"yes" if unbound_harden_dnssec_stripped else "no"}}
@@ -57,8 +60,11 @@ server:
 {% for zone in unbound_forward_zones %}
 
 forward-zone:
-    name: {{zone.name}}
-    {% for addr in zone.addresses %}
-    forward-addr: {{addr}}
-    {% endfor %}
+    name: "{{zone.name}}"
+{% if "tls" in zone and zone.tls %}
+    forward-tls-upstream: yes
+{% endif %}
+{% for addr in zone.addresses %}
+    forward-addr: "{{addr}}"
+{% endfor %}
 {% endfor %}
