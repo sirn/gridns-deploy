@@ -2,15 +2,13 @@
 ## Install
 ##
 
-- name: install
+- name: install snooze
   become: yes
   pkgng:
-    name:
-      - snooze
+    name: snooze
     state: latest
   notify:
     - restart unbound-blocklist
-
 
 ## Configure
 ##
@@ -24,7 +22,6 @@
     group: wheel
     mode: 0755
 
-
 - name: copy unbound-blocklist configuration
   become: yes
   copy:
@@ -33,7 +30,6 @@
     owner: nobody
     group: wheel
     mode: 0600
-
 
 ## Setup
 ##
@@ -61,7 +57,6 @@
       --workdir /usr/local/etc/unbound-blocklist
   args:
     creates: /usr/local/etc/unbound-blocklist/blocklist.conf
-
 
 ## Supervise
 ##
@@ -114,7 +109,6 @@
   notify:
     - rescan s6
     - restart unbound-blocklist logger
-
 
 ## Per-role flush
 ##

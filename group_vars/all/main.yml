@@ -4,7 +4,6 @@
 
 ansible_python_interpreter: /usr/local/bin/python3.6
 
-
 ## System tuning
 ##
 
@@ -13,7 +12,6 @@ tuning_disable_tsc_calibration: yes
 tuning_soacceptqueue: 4096
 
 hardening_ssh_port: 4022
-
 
 ## Roles configurations
 ##
@@ -57,25 +55,22 @@ doh_server_addresses:
   - "127.0.0.1:8053"
 
 doh_server_upstream:
-  - "127.0.0.1:1053"
-
+  - "udp:127.0.0.1:1053"
 
 # Nginx
 #
 
 nginx_accf_http: yes
 
+nginx_accf_http_load: yes
+
 nginx_accf_data: yes
+
+nginx_accf_data_load: yes
 
 nginx_access_log: /dev/null
 
-nginx_drop_privileges_early: yes
-
 nginx_error_log_level: warn
-
-nginx_http_port: 1080
-
-nginx_https_port: 1443
 
 nginx_ipv6: yes
 
@@ -86,6 +81,7 @@ nginx_sites:
       - path: /
         redirect_match: "^/(.*)$"
         redirect_target: "https://{{hostname}}/$1"
+
   - secure: yes
     dehydrated_cert: "{{hostname}}"
     domains:
@@ -114,13 +110,19 @@ pf_allow_ipv6: yes
 
 pf_ext_iface: vtnet0
 
-pf_ipv4_forwarded_ports:
-  - { port: "80", proto: tcp, address: "{{ipv4_address}}", dest_port: "1080" }
-  - { port: "443", proto: tcp, address: "{{ipv4_address}}", dest_port: "1443" }
+pf_ipv4_allowed_ports:
+  - proto: tcp
+    to_port: "80"
 
-pf_ipv6_forwarded_ports:
-  - { port: "80", proto: tcp, address: "{{ipv6_address}}", dest_port: "1080" }
-  - { port: "443", proto: tcp, address: "{{ipv6_address}}", dest_port: "1443" }
+  - proto: tcp
+    to_port: "443"
+
+pf_ipv6_allowed_ports:
+  - proto: tcp
+    to_port: "80"
+
+  - proto: tcp
+    to_port: "443"
 
 pf_ssh_port: 4022
 

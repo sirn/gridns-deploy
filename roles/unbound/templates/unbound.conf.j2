@@ -2,15 +2,15 @@ server:
     verbosity: {{unbound_verbosity}}
 
 {% for address in unbound_addresses %}
-    interface: {{address}}
+    interface: "{{address}}"
 {% endfor %}
     port: {{unbound_port}}
 {% if unbound_drop_privileges_early %}
     username: ""
     chroot: ""
 {% else %}
-    username: unbound
-    chroot: /usr/local/etc/unbound
+    username: "unbound"
+    chroot: "/usr/local/etc/unbound"
 {% endif %}
     use-syslog: no
     logfile: ""
@@ -39,9 +39,9 @@ server:
     hide-identity: {{"yes" if unbound_hide_identity else "no"}}
     hide-version: {{"yes" if unbound_hide_version else "no"}}
 
-    auto-trust-anchor-file: /usr/local/etc/unbound/root.key
-    dlv-anchor-file: /usr/local/etc/unbound/dlv.isc.org.key
-    root-hints: /usr/local/etc/unbound/named.cache
+    auto-trust-anchor-file: "/usr/local/etc/unbound/root.key"
+    dlv-anchor-file: "/usr/local/etc/unbound/dlv.isc.org.key"
+    root-hints: "/usr/local/etc/unbound/named.cache"
 {% if unbound_tls_cert_bundle %}
     tls-cert-bundle: "{{unbound_tls_cert_bundle}}"
 {% endif %}
@@ -54,7 +54,7 @@ server:
 {% if unbound_includes %}
 
 {% for inc in unbound_includes %}
-    include: {{inc}}
+    include: "{{inc}}"
 {% endfor %}
 {% endif %}
 {% for zone in unbound_forward_zones %}

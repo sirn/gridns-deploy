@@ -6,10 +6,9 @@
   become: yes
   pkgng:
     name: unbound
-    state: present
+    state: latest
   notify:
     - restart unbound
-
 
 ## Configure
 ##
@@ -46,7 +45,6 @@
     creates: /usr/local/etc/unbound/root.key
   register: unbound_root_key
   failed_when: unbound_root_key.rc > 1
-
 
 ## Supervise
 ##
@@ -85,7 +83,6 @@
   notify:
     - rescan s6
     - restart unbound logger
-
 
 ## Per-role flush
 ##
