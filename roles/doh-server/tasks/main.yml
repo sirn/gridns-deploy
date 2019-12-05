@@ -2,15 +2,14 @@
 ## Install
 ##
 
-- name: install
+- name: install doh-server
   become: yes
   pkgng:
     name:
-      - git-lite
+      - curl
       - gmake
       - go
     state: latest
-
 
 ## Configure
 ##
@@ -24,7 +23,6 @@
     group: wheel
     mode: 0755
 
-
 - name: configure doh-server
   become: yes
   template:
@@ -33,25 +31,37 @@
   notify:
     - restart doh-server
 
-
 ## Setup
 ##
 
 - name: install doh-server
   become: yes
   shell: |
-    BUILD_BASE="$(mktemp -d)"
-    SRCDIR="$BUILD_BASE/src"
-    GOPATH="$BUILD_BASE/gopath"
+    BUILD_BASE=$(mktemp -d)
+    SRCDIR=$BUILD_BASE/src
+    GOPATH=$BUILD_BASE/gopath
     trap 'rm -rf $BUILD_BASE' 0 1 2 3 6 14 15
 
-    git clone https://github.com/m13253/dns-over-https.git "$SRCDIR"
+    VERSION=2.2.1
+    DIST_URL=https://github.com/m13253/dns-over-https/archive/v${VERSION}.tar.gz
+
+    if [ -f /usr/local/bin/doh-server ]; then
+        INSTALLED_VER=$(doh-server --version | awk '/doh-server/ { print $2 }')
+        if [ "$INSTALLED_VER" = "$VERSION" ]; then
+            exit 128
+        fi
+    fi
+
+    mkdir -p "$SRCDIR"
+    curl -sSL "$DIST_URL" | tar -C "$SRCDIR" -xzf - --strip-components=1
     cd "$SRCDIR" || exit 1
     gmake || exit 1
     install -m0755 doh-server/doh-server /usr/local/bin/doh-server
-  args:
-    creates: /usr/local/bin/doh-server
-
+  register: doh_bootstrap
+  failed_when: doh_bootstrap.rc != 0 and doh_bootstrap.rc != 128
+  changed_when: doh_bootstrap.rc != 128
+  notify:
+    - restart doh-server
 
 ## Supervise
 ##
@@ -88,7 +98,6 @@
   notify:
     - rescan s6
     - restart doh-server logger
-
 
 ## Per-role flush
 ##

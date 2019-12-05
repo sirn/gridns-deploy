@@ -7,8 +7,6 @@ doh_server_logger: |
 
 doh_server_retries: 3
 
-doh_server_tcp_only: false
-
 doh_server_timeout: 10
 
 doh_server_upstream:
